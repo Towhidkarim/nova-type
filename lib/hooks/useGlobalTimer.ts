@@ -1,7 +1,7 @@
 import { atom, useAtom } from 'jotai';
 import { useEffect } from 'react';
+import { testDurationAtom } from '../atoms';
 
-export const initialTimeAtom = atom(30);
 export const timeAtom = atom(30);
 export const isRunningAtom = atom(false);
 
@@ -20,7 +20,7 @@ const timerControlAtom = atom(
       case 'start':
         if (!get(isRunningAtom)) {
           set(isRunningAtom, true);
-          set(timeAtom, get(initialTimeAtom));
+          set(timeAtom, get(testDurationAtom));
           interval = setInterval(() => {
             set(timeAtom, (t) => t - 1);
           }, 1000);
@@ -34,7 +34,7 @@ const timerControlAtom = atom(
 
       case 'reset':
         clear();
-        set(timeAtom, get(initialTimeAtom));
+        set(timeAtom, get(testDurationAtom));
         set(isRunningAtom, false);
         break;
     }

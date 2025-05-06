@@ -4,27 +4,30 @@ import { Word } from './word';
 import { getWords } from '@/lib/getWords';
 import { useAtom } from 'jotai';
 import { useGlobalTimer } from '@/lib/hooks/useGlobalTimer';
-import { testRunningAtom } from '@/lib/atoms';
+import { testDurationAtom, testRunningAtom } from '@/lib/atoms';
 import ControlSection from './ControlSection';
+import Results from './Results';
 
 export default function TypeSection({ wordList }: { wordList: string[] }) {
-  const myWords = wordList;
+  const [wordSource, setWordSource] = useState(wordList);
   const [testRunning, setTestRunning] = useAtom(testRunningAtom);
-  const [keyStrokesEnabled, setKeyStrokesEnabled] = useState(true);
+  const keyStrokesEnabled = useRef(true);
   const [showResults, setShowResults] = useState(false);
-  const testDurationSeconds = 30;
+  const [testDurationSeconds] = useAtom(testDurationAtom);
 
   const [currentWord, setCurrentWord] = useState('');
   const [previousWords, setPreviousWords] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const hideBefore = useRef(0);
-  const currentLine = useRef(1);
-  const { time, setTime, start, pause, reset } = useGlobalTimer();
   const wordIndexRef = useRef({ word: '', index: 0 });
   const previousWordsRef = useRef(previousWords);
-  const typeboxRef = useRef<HTMLDivElement>(null);
 
+  const hideBefore = useRef(0);
+  const currentLine = useRef(1);
+
+  const typeboxRef = useRef<HTMLDivElement>(null);
   const [caretAbspos, setCaretAbsPos] = useState({ x: 0, y: 0 });
+
+  const { time, setTime, start, pause, reset } = useGlobalTimer();
 
   const lastLineLastIndex = useRef<{ curr: number; prev: number }>({
     curr: 1000,
@@ -62,10 +65,10 @@ export default function TypeSection({ wordList }: { wordList: string[] }) {
   };
 
   // Control functions
-  const startTest = (timeSeconds: number = 30) => {
+  const startTest = () => {
     reset();
     pause();
-    setTime(timeSeconds);
+    setTime(testDurationSeconds);
     start();
     setShowResults(false);
   };
@@ -73,14 +76,15 @@ export default function TypeSection({ wordList }: { wordList: string[] }) {
   const stopTest = () => {
     pause();
     setTime(0);
-    setKeyStrokesEnabled(false);
+    keyStrokesEnabled.current = false;
     setTestRunning(false);
     // setShowResults(true);
   };
 
   const resetTest = () => {
-    setTime(30);
-    setKeyStrokesEnabled(true);
+    pause();
+    setTime(testDurationSeconds);
+    keyStrokesEnabled.current = true;
     setShowResults(false);
     setCurrentWordIndex(0);
     setCurrentWord('');
@@ -93,6 +97,12 @@ export default function TypeSection({ wordList }: { wordList: string[] }) {
     currentLine.current = 1;
   };
 
+  const startNewTest = () => {
+    const newWordList = getWords(100);
+    setWordSource(newWordList);
+    resetTest();
+  };
+
   useEffect(() => {
     wordIndexRef.current = { word: currentWord, index: currentWordIndex };
   }, [currentWord, currentWordIndex]);
@@ -101,23 +111,25 @@ export default function TypeSection({ wordList }: { wordList: string[] }) {
   }, [previousWords]);
 
   useEffect(() => {
-    if (testRunning) startTest();
     if (time <= 0) {
       stopTest();
       setShowResults(true);
     }
-  }, [time, testRunning]);
+  }, [time]);
+  useEffect(() => {
+    if (testRunning) startTest();
+  }, [testRunning]);
 
   useEffect(() => {
     const eventHandler = (e: KeyboardEvent) => {
-      if (!keyStrokesEnabled) return; //do nothing on input in this case
+      if (!keyStrokesEnabled.current) return; //do nothing on input in this case
       const { word, index } = wordIndexRef.current;
       // console.log(e.key);
       if (e.key === 'Backspace') {
         if (
           word.length === 0 &&
           index > 0 &&
-          previousWordsRef.current[index - 1] !== myWords[index - 1] //if previous word was incorrect
+          previousWordsRef.current[index - 1] !== wordSource[index - 1] //if previous word was incorrect
         ) {
           //set the previous word and indexes as current
           setCurrentWordIndex((prev) => prev - 1);
@@ -140,25 +152,22 @@ export default function TypeSection({ wordList }: { wordList: string[] }) {
     return () => {
       window.removeEventListener('keydown', eventHandler);
     };
-  }, [keyStrokesEnabled]);
+  }, []);
   return (
     <section className='relative'>
-      <div
-        className='z-10 absolute inset-0 place-items-center grid bg-primary/10 backdrop-blur-xl rounded-xl w-full h-44 text-4xl text-center'
-        style={{
-          display: showResults ? 'block' : 'none',
-        }}
-      >
-        <span className='top-1/2 left-1/2 absolute -translate-x-1/2 -translate-y-1/2'>
-          {previousWordsRef.current.length} <br /> WPM
-        </span>
-      </div>
+      <Results
+        newTestFunction={startNewTest}
+        restartFunction={resetTest}
+        show={showResults}
+        sourceWords={wordSource}
+        typedWords={previousWordsRef.current}
+      />
       <div className='max-h-40 overflow-clip'>
         <div
           ref={typeboxRef}
           className='relative flex flex-row flex-wrap gap-4 p-1 h-fit font-medium text-4xl select-none'
         >
-          {myWords.map((item, wi) => {
+          {wordSource.map((item, wi) => {
             if (wi >= hideBefore.current) {
               return (
                 <Word

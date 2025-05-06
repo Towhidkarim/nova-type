@@ -14,10 +14,13 @@ export default function ControlSection({
   return (
     <div className='mx-auto w-full'>
       <button
-        onClick={() => resetTest()}
+        onClick={(e) => {
+          setTimeout(resetTest, 300);
+          e.currentTarget.blur();
+        }}
         className='block hover:bg-foreground/10 mx-auto my-10 px-3 py-2 border border-foreground/20 rounded-lg active:scale-95 transition-all cursor-pointer'
       >
-        Retry
+        Restart
       </button>
     </div>
   );
