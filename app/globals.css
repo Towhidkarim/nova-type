@@ -1,0 +1,41 @@
+@import 'tailwindcss';
+
+:root {
+  /* --background: #221d27;
+  --foreground: #f9f8fb;
+  --secondary: #768f95; */
+  --background: hsl(313.8, 24.5%, 10.4%);
+  --foreground: hsl(270, 20%, 97.8%);
+  --card: hsl(300, 15.8%, 3.7%);
+  --card-foreground: hsl(240, 4.8%, 95.9%);
+  --popover: hsl(320, 23.08%, 5.1%);
+  --popover-foreground: hsl(326, 33%, 96%);
+  --primary: hsl(332, 100%, 32%);
+  --primary-foreground: hsl(326, 85%, 90%);
+  --secondary: hsl(273.8, 15.1%, 20.8%);
+  --secondary-foreground: hsl(270, 30%, 83%);
+  --muted: hsl(283, 9%, 25%);
+  --muted-foreground: hsl(326, 33%, 86%);
+  --accent: hsl(272, 20%, 27%);
+  --accent-foreground: hsl(326, 33%, 96%);
+  --destructive: hsl(336, 53%, 34%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(262.5, 10%, 15.7%);
+  --input: hsl(326.3, 20%, 15.7%);
+  --ring: hsl(333.3, 71.4%, 50.6%);
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-secondary: var(--secondary);
+  --color-destructive: var(--destructive);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
