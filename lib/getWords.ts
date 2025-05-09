@@ -26,7 +26,7 @@ export function getWords(count: number = 100) {
   let list: string[] = [];
 
   for (let i = 0; i < count; i++) {
-    const randomIndex = Math.round(Math.random() * wordList.length);
+    const randomIndex = Math.round(Math.random() * (wordList.length - 1));
     list.push(wordList[randomIndex].toLowerCase());
   }
   return list;

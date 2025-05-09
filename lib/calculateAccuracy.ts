@@ -12,8 +12,8 @@ export default function calculateAccuracy(
         : sourceWords[wi].length;
     for (let li = 0; li < wordLength; li++) {
       strokeCount++;
-      const typed = typedWords[li];
-      const source = sourceWords[li];
+      const typed = typedWords[wi][li];
+      const source = sourceWords[wi][li];
       if (typed && source && typed === source) correctCount++;
       else wrongCount++;
     }

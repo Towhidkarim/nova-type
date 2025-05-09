@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Word } from './word';
 import { getWords } from '@/lib/getWords';
 import { useAtom } from 'jotai';
@@ -95,6 +95,7 @@ export default function TypeSection({ wordList }: { wordList: string[] }) {
     };
     hideBefore.current = 0;
     currentLine.current = 1;
+    setTestRunning(false);
   };
 
   const startNewTest = () => {
@@ -108,6 +109,8 @@ export default function TypeSection({ wordList }: { wordList: string[] }) {
   }, [currentWord, currentWordIndex]);
   useEffect(() => {
     previousWordsRef.current = [...previousWords];
+    if (previousWords.length >= wordSource.length - 20)
+      setWordSource((prev) => [...prev, ...getWords()]);
   }, [previousWords]);
 
   useEffect(() => {
@@ -195,7 +198,7 @@ export default function TypeSection({ wordList }: { wordList: string[] }) {
           ></div>
         </div>
       </div>
-      <ControlSection resetTest={resetTest} />
+      <ControlSection startNewTest={startNewTest} resetTest={resetTest} />
     </section>
   );
 }

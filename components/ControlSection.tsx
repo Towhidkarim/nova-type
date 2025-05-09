@@ -3,25 +3,65 @@
 import { testRunningAtom } from '@/lib/atoms';
 import { useGlobalTimer } from '@/lib/hooks/useGlobalTimer';
 import { useAtom } from 'jotai';
+import { PlayIcon, RotateCcw } from 'lucide-react';
+import Button from './ui/button';
+import React, { useEffect } from 'react';
 
-export default function ControlSection({
+function ControlSection({
   resetTest,
+  startNewTest,
 }: {
+  startNewTest: () => void;
   resetTest: () => void;
 }) {
   //   const { setTime, start, pause } = useGlobalTimer();
-  const [testRunning, setTestRunning] = useAtom(testRunningAtom);
+  // const [testRunning, setTestRunning] = useAtom(testRunningAtom);
+  useEffect(() => {
+    const keyDownEvent = (e: KeyboardEvent) => {
+      if (e.key === ' ' && e.ctrlKey) resetTest();
+      else if (e.key == 'Enter' && e.ctrlKey) startNewTest();
+    };
+    window.addEventListener('keydown', keyDownEvent);
+    return () => {
+      window.removeEventListener('keydown', keyDownEvent);
+    };
+  }, []);
   return (
-    <div className='mx-auto w-full'>
-      <button
-        onClick={(e) => {
-          setTimeout(resetTest, 300);
-          e.currentTarget.blur();
-        }}
-        className='block hover:bg-foreground/10 mx-auto my-10 px-3 py-2 border border-foreground/20 rounded-lg active:scale-95 transition-all cursor-pointer'
-      >
-        Restart
-      </button>
+    <div className='flex flex-row justify-center items-center gap-5 mx-auto my-10 w-fit'>
+      <div className='relative'>
+        <Button
+          onClick={(e) => {
+            setTimeout(resetTest, 300);
+            e.currentTarget.blur();
+          }}
+          className='flex flex-row gap-2'
+        >
+          <RotateCcw />
+          Restart
+        </Button>
+        <div className='-bottom-4/5 left-1/2 absolute flex justify-center items-center gap-2 opacity-45 w-20 font-light text-xs -translate-x-1/2'>
+          <span className='block bg-secondary p-1 rounded-lg'>ctrl</span>+
+          <span className='block bg-secondary p-1 rounded-lg'>space</span>
+        </div>
+      </div>
+      <div className='relative'>
+        <Button
+          onClick={(e) => {
+            startNewTest();
+            e.currentTarget.blur();
+          }}
+          className='flex flex-row gap-2'
+        >
+          <PlayIcon />
+          New Test
+        </Button>
+        <div className='-bottom-4/5 left-1/2 absolute flex justify-center items-center gap-2 opacity-45 w-20 font-light text-xs -translate-x-1/2'>
+          <span className='block bg-secondary p-1 rounded-lg'>ctrl</span>+
+          <span className='block bg-secondary p-1 rounded-lg'>enter</span>
+        </div>
+      </div>
     </div>
   );
 }
+
+export default React.memo(ControlSection);

@@ -10,7 +10,7 @@ export default function Button({ className, children, ...rest }: TButtonProps) {
     <button
       {...rest}
       className={cn(
-        ' hover:bg-foreground/10 mx-auto  px-3 py-2 border border-foreground/20 rounded-lg active:scale-95 transition-all cursor-pointer',
+        'hover:bg-foreground/10 mx-auto disabled:opacity-50 disabled:cursor-not-allowed px-3 py-2 border border-foreground/20 rounded-lg active:scale-95 transition-all cursor-pointer',
         className
       )}
     >

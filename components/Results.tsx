@@ -26,33 +26,37 @@ export default function Results({
     () => calculateAccuracy(typedWords, sourceWords),
     [show]
   );
-  const metrics = [
-    {
-      value: `${Math.round(typedWords.length * (60 / testDurationSeconds))}`,
-      title: 'WPM',
-      subtitle: 'words per minute',
-    },
-    {
-      value: `${Math.round(accuracy * 100)}%`,
-      title: 'Accuracy',
-      subtitle: 'Correct Characters',
-    },
-    {
-      value: `${testDurationSeconds}s`,
-      title: 'Time',
-      subtitle: 'Test Duration',
-    },
-  ];
+  const calculateMetrics = useCallback(
+    () => [
+      {
+        value: `${Math.round(typedWords.length * (60 / testDurationSeconds))}`,
+        title: 'WPM',
+        subtitle: 'words per minute',
+      },
+      {
+        value: `${Math.round(accuracy * 100)}%`,
+        title: 'Accuracy',
+        subtitle: 'Correct Characters',
+      },
+      {
+        value: `${testDurationSeconds}s`,
+        title: 'Time',
+        subtitle: 'Test Duration',
+      },
+    ],
+    [show]
+  );
+
   return (
     <div
       className={cn(
-        'z-10 absolute inset-0 transition-all origin-center place-items-center duration-300 grid bg-primary/10 backdrop-blur-xl rounded-xl w-full h-64 text-center select-none',
+        'z-10 absolute inset-0 transition-all origin-center place-items-center duration-150 grid bg-primary/10 backdrop-blur-xl rounded-xl w-full h-64 text-center select-none',
         show ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
       )}
     >
       <div className='my-5'>
         <div className='flex flex-row gap-2 w-full'>
-          {metrics.map((metric, index) => (
+          {calculateMetrics().map((metric, index) => (
             <div
               key={index}
               className='flex flex-col justify-center items-center gap-0 bg-primary-foreground/10 p-5 rounded-lg w-48 h-36'

@@ -5,12 +5,13 @@ import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import Button from './ui/button';
 import { cn } from '@/lib/utils';
-import { testDurationAtom } from '@/lib/atoms';
+import { testDurationAtom, testRunningAtom } from '@/lib/atoms';
 
 export default function Timer() {
   const { time, setTime } = useGlobalTimer();
   const [testDurationSeconds, setTestDurationSeconds] =
     useAtom(testDurationAtom);
+  const [testRunning] = useAtom(testRunningAtom);
   const handleDurationChange = (duration: number) => {
     setTestDurationSeconds(duration);
     setTime(duration);
@@ -27,6 +28,7 @@ export default function Timer() {
         <div className='flex flex-row gap-0'>
           {durationOptions.map((duration, index) => (
             <Button
+              disabled={testRunning}
               key={duration}
               onClick={(e) => {
                 handleDurationChange(duration);
